@@ -103,17 +103,24 @@ def plot(sampleset,channel,parallel=True,tag="",outdir="plots",histdir="",era=""
   
   # SELECTIONS
   inclusive = "(q_1*q_2<0)"
+  os_strict = "(q_1*q_2<0)&&(iso_1<0.3)"
+  os_relaxed = "(q_1*q_2<0)&&(iso_1>=0.3)"
+  ss_relaxed = "(q_1*q_2>0)&&(iso_1>=0.3)"
   inclusive = inclusive.replace(" ","")
   inclusive_cr_qcd = inclusive.replace("q_1*q_2<0","q_1*q_2>0") # inverting the opposite-sign requirement of the mutau pair into a same-sign requirment
   selections = [
     Sel('inclusive',inclusive),
     Sel('inclusive_cr_qcd',inclusive_cr_qcd),
+    Sel('os_strict',os_strict),
+    Sel('os_relaxed',os_relaxed),
+    Sel('ss_relaxed',ss_relaxed),
   ]
   
   # VARIABLES
   # TODO section 5: extend with other variables, which are available in the flat n-tuples
   variables = [
      Var('m_vis',  40,  0, 200),
+     Var('q_1',  1,  -2, +2),
   ]
   
   # PLOT and HIST
@@ -123,7 +130,7 @@ def plot(sampleset,channel,parallel=True,tag="",outdir="plots",histdir="",era=""
   exts     = ['png','pdf']
   for selection in selections:
     outhists.mkdir(selection.filename)
-    stacks = sampleset.getstack(variables,selection,method='QCD_OSSS',scale=1.1,parallel=parallel) # the 'scale' keyword argument - chosen as 1.1 for mutau - 
+    stacks = sampleset.getstack(variables,selection,method='QCD_OSSS',scale=1.0744,parallel=parallel) # the 'scale' keyword argument - chosen as 1.1 for mutau - 
                                                                                                    # is an extrapolation factor for the QCD shape from the same-sign
                                                                                                    # to the opposite-sign region
     fname  = "%s/$VAR_%s-%s-%s$TAG"%(outdir,channel,selection.filename,era)
